@@ -1,0 +1,68 @@
+
+body {
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    color: #fcfaec;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+
+        top: 0;
+        left: 0;
+        /* width: 100vw;
+        height: 100vh; */
+        background-image: url(../images/dotted-bg.webp);
+        background-size: cover;
+        /* opacity: 0.4; */
+        /* z-index: -1; */
+}
+
+.game-board {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 100px;
+    margin-left: 25px;
+}
+
+#instructions {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 0;
+
+}
+
+#score {
+    position: absolute;
+}
+
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    height: 250px;
+}
+
+.canvas {
+    border: 4px solid black;
+    display: flex;
+    flex-direction: column;
+    background-image: url(../images/start-screen.png);
+    background-size: cover;
+  };
+
+#start-button {
+    font-size: 20px;
+    font-family: sans-serif;
+    font-weight: 700;
+    width: 60%;
+    padding: 10px 30px;
+    background-color: #7ECF57;
+    font-style: italic black;
+}
