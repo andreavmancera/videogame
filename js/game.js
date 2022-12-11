@@ -9,9 +9,28 @@ class Game {
         this.whoops = new Whoops(this.ctx, (this.ctx.canvas.width / 2)  - 130, 30);
         this.tick = 0;
         this.frames = 0;
+        this.showYummy = false;
+        this.showWhoops = false;
+        this.messageFrames = 0;
         this.levelUpImg = new Image();
         this.levelUpImg.src = "./images/level-up.png";
+        this.gameOverImg = new Image();
+        this.gameOverImg.src = "./images/game-over.png";
+        this.winnerImg = new Image();
+        this.winnerImg.src = "./images/winner.png";
         this.scoreCount = 0;
+        this.manyIngredients = 100;
+        this.collisionY = 0;
+        this.collisionX = 0;
+
+        this.yummy = new Image();
+        this.yummy.src = "./images/yummy.png";
+        this.whoops = new Image();
+        this.whoops.src = "./images/whoops.png";
+
+        this.levelImg = new Image();
+        this.levelImg.src = `./images/levels/${this.level}.png`;
+    
         //this.restartBoard = document.querySelector('#restartBoard')
     }
 
@@ -23,15 +42,25 @@ class Game {
             this.move();
             this.checkCollisions();
             this.tick++;
-            if (this.tick % 150 === 0) {
+            if (this.tick % this.manyIngredients === 0) {
 				this.addIngredient();
 			}
-            this.frames++;
+
+            this.messageFrames++;
         
-            if (this.frames % 1200 === 0) {
+            if (this.tick === 800) {
                 ingredients.push("bread");
-        
             }
+
+            if (this.showYummy === true && this.messageFrames < 30) {
+                this.drawYummy();
+            }
+
+            if (this.showWhoops === true && this.messageFrames < 30) {
+                this.drawWhoops();
+            }
+
+            console.log(this.collisionX)
             
             // if (this.frames % 5 === 0) {
             //     this.drawYummy();
@@ -41,21 +70,58 @@ class Game {
 
     levelUp() {
         this.level += 1;
+        this.tick = 0;
         clearInterval(this.intervalId);
-        this.ctx.drawImage(this.levelUpImg, 0, 0, this.canvas.width, this.canvas.height)
+        this.player.bandeja.slices = [];
+        this.ingredients = [];
+        ingredients.splice(ingredients.indexOf('bread'), 1); //creo que no está funcionando
+        this.player.bandeja.topY = this.player.y;
+        
         //this.restartBoard.show();
 
 
 
-        if (this.level === 1) {
-            this.ingredients.vy === 3;
+        if (this.level === 1 || this.level === 2 || this.level === 3) {
+            this.ctx.drawImage(this.levelUpImg, 0, 0, this.canvas.width, this.canvas.height);
+            this.levelImg.src = `./images/levels/${this.level}.png`;
+            this.drawMidScores();
+            this.ingredients.vy += 0.5; //no funciona creo
+            this.player.speed += 0.3; //no funciona porque cada vez que onkeyup speed=1
+            this.manyIngredients += 30;
+            setTimeout(() => {
+                this.start();
+            }, 3000)
         }
-        if (this.level === 2) {
-            this.ingredients.vy === 3.5;
+        // if (this.level === 2) {
+        //     this.ctx.drawImage(this.levelUpImg, 0, 0, this.canvas.width, this.canvas.height)
+        //     this.ingredients.vy === 4.5;
+        //     this.levelImg.src = `./images/levels/${this.level}.png`;
+        //     this.drawMidScores();
+        //     setTimeout(() => {
+        //         this.start();
+        //     }, 3000)
+        // }
+        // if (this.level === 3) {
+        //     this.ctx.drawImage(this.levelUpImg, 0, 0, this.canvas.width, this.canvas.height)
+        //     this.ingredients.vy === 5;
+        //     this.levelImg.src = `./images/levels/${this.level}.png`;
+        //     this.drawMidScores();
+        //     setTimeout(() => {
+        //         this.start();
+        //     }, 3000)
+        // }
+
+        if (this.level === 4) {
+            this.ctx.drawImage(this.winnerImg, 0, 0, this.canvas.width, this.canvas.height)
+
         }
-        if (this.level === 3) {
-            this.ingredients.vy === 4;
-        }
+        
+    }
+
+    gameOver() {
+        clearInterval(this.intervalId);
+        this.ctx.drawImage(this.gameOverImg, 0, 0, this.canvas.width, this.canvas.height);
+        this.level = 1;
     }
 
     draw() {
@@ -63,18 +129,24 @@ class Game {
         this.player.draw();
         this.ingredients.forEach(ing => {
             ing.draw();
-            if (ing.y > (this.canvas.height - ing.height)) {
+            if (ing.y > (this.canvas.height + ing.height)) {
                 ing.isFalling = false;
                 ing.isCatched = true;
             }
         }); 
 
-        this.drawScore()
+        this.drawScore();
+        this.drawLevel();
+        
+    }
+
+    drawLevel() {
+        this.ctx.drawImage(this.levelImg, this.canvas.width - 150, 15, 125, 125)
     }
 
     addIngredient() {
         const randomIngredient =  ingredients[Math.floor(Math.random() * ingredients.length)]
-        this.ingredients.push(new Ingredients(this.ctx, Math.floor(Math.random() * 470), -50, randomIngredient));
+        this.ingredients.push(new Ingredient(this.ctx, Math.floor(Math.random() * 640), -50, randomIngredient));
     }
 
     move() {
@@ -88,15 +160,25 @@ class Game {
 	};
 
     drawYummy() {
-        this.yummy = new Image();
-        this.yummy.src = "./images/yummy.png";
-        this.isReady = false;
 	    this.ctx.drawImage(
             this.yummy,
-            (this.ctx.canvas.width / 2)  - 130,
-            30,
-            300,
-            this.yummy.width * (this.yummy.height / this.yummy.width)
+            this.collisionX + this.player.bandeja.width - 10,//this.player.bandeja.x + this.player.bandeja.width - 10,
+            this.collisionY - 55, //this.player.bandeja.topY - 55,
+            //(this.ctx.canvas.width / 2)  - 150,
+            //50,
+            140,
+            140 * 1795 / 3098
+        )
+
+    }
+
+    drawWhoops() {
+	    this.ctx.drawImage(
+            this.whoops,
+            this.collisionX + this.player.bandeja.width - 10,
+            this.collisionY - 55,
+            140,
+            140 * 1795 / 3098
         )
 
     }
@@ -109,24 +191,51 @@ class Game {
                     this.ingredients.slice(ingredient.index, ingredient.index + 1); //creo que esto no hace nada
 
                     const slice = new Slice(this.ctx, this.player.bandeja.x, this.player.bandeja.topY - 14.85, ingredient.type)
-                    this.player.bandeja.topY = slice.y
+                    this.player.bandeja.topY = slice.y;
                     this.player.bandeja.slices.push(slice);
+                    this.collisionY = this.player.bandeja.topY;
+                    this.collisionX = this.player.bandeja.x;
 
                     if (ingredient.type === "tomato" || ingredient.type === "lettuce" || ingredient.type === "cheese" || ingredient.type === "bacon") {
                         this.scoreCount += 100;
+                        this.showYummy = true;
+                        this.showWhoops = false;
+                        this.messageFrames = 0;
+                        
                     };
 
                     if (ingredient.type === "toxicSauce") {
                         this.scoreCount -= 50;
+                        this.showYummy = false;
+                        this.showWhoops = true;
+                        this.messageFrames = 0;
+                        this.player.xFrame = 1;
+                        setTimeout(() => {
+                            this.player.xFrame = 0;
+                        }, 1250)
                     };
 
                     if (ingredient.type === "bread") {
                         setTimeout(() => {
                             this.levelUp();
                           }, 500)
-                        //this.levelUp(); //lo que tengo que hacer es pasar una variable a true cuando el pan sea sety de ahí level up
+    
                     };
                  };  
+
+                 if (this.player.bandeja.topY <= 0) {
+                    //console.log("game over")
+                    this.gameOver();
+                 };
+                
+                 if (this.scoreCount < 0) {
+                    this.showWhoops = false;
+                    setTimeout(() => {
+                        this.gameOver();
+                        //this.ctx.fillText('0', 115, 35); hay que borrar el otro
+                      }, 100)
+                    
+                 }
             
         })
     }
@@ -143,15 +252,22 @@ class Game {
     drawScore() {
         this.ctx.fillStyle = 'white';
         this.ctx.strokeStyle = "black";
-        this.ctx.strokeRect(0, 0, 300, 50);
-        this.ctx.fillRect(0, 0, 300, 50);
+        this.ctx.strokeRect(0, 0, 220, 55);
+        this.ctx.fillRect(0, 0, 220, 55);
         this.ctx.lineWidth = 8;
 
         this.ctx.fillStyle = 'black';
-        this.ctx.font = '32px Comic Neue';
-        this.ctx.fillText(`Score:`, 15, 35);
-        this.ctx.font = 'bold 32px Comic Neue';
-        this.ctx.fillText(`${this.scoreCount}`, 115, 35);
+        this.ctx.font = '35px Comic Neue';
+        this.ctx.fillText(`Score:`, 15, 39);
+        this.ctx.font = 'bold 40px Boogaloo';
+        this.ctx.fillText(`${this.scoreCount}`, 115, 42);
+    }
+
+    drawMidScores() {
+        console.log("entro")
+        this.ctx.fillStyle = 'black';
+        this.ctx.font = '70px Boogaloo';
+        this.ctx.fillText(`${this.scoreCount}`, 610, 337);
     }
 
 }

@@ -6,14 +6,11 @@ class Bandeja {
     this.topY = y;
     this.width = width;
     this.height = height;
-    this.slices = []; //aquí hay que añadir el type del ingrediente que ha colisionado
+    this.slices = [];
 
   }
 
   draw() {
-    // this.ctx.fillStyle = "yellow";
-    // this.ctx.fillRect(this.x, this.y, this.width, this.height);
-
     this.slices.forEach((slice) => {
       slice.draw();
     });

@@ -1,4 +1,4 @@
-class Ingredients {
+class Ingredient {
     constructor (ctx, x, y, type) { //luego img
         this.ctx = ctx;
         this.x = x;
@@ -9,8 +9,6 @@ class Ingredients {
         this.isFalling = true;
         this.type = type;
         
-
-
         this.horizontalFrames = 4;
 	    this.verticalFrames = 1;
 	    this.xFrame = 0;
@@ -23,7 +21,7 @@ class Ingredients {
             this.width = this.height * (this.img.width / this.img.height);
         }
 
-        this.vy = 3;
+        this.vy = 4;
         this.tick = 0;
     }
 

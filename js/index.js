@@ -4,6 +4,7 @@ startBtn = document.getElementById("start-button");
 window.onload = () => {
     startBtn.addEventListener('click', () => {
       game.start();
+      startBtn.classList.add('hidden');
     });
 
     document.addEventListener('keydown', function(event) {
