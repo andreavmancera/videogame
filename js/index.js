@@ -2,8 +2,10 @@ const game = new Game("canvas", 1);
 startBtn = document.getElementById("start-button");
 
 window.onload = () => {
+  const scores = JSON.parse(localStorage.getItem('myScores'));
     startBtn.addEventListener('click', () => {
       game.start();
+     
       startBtn.classList.add('hidden');
     });
 

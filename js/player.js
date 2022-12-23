@@ -18,6 +18,7 @@ class Player {
         }
 
         this.speed = 3;
+        this.speedSpeed = 0;
         this.isMovingRight = false;
         this.isMovingLeft = false;
         this.bandeja = new Bandeja(this.ctx, this.x, this.y, 110, 10);
@@ -45,12 +46,12 @@ class Player {
     move() {
         if(this.isMovingRight){
             this.x += this.speed;
-            this.speed += 0.07;
+            this.speed += 0.07 + this.speedSpeed;
         }
 
         if(this.isMovingLeft){
             this.x -= this.speed;
-            this.speed += 0.07;
+            this.speed += 0.07 + this.speedSpeed;
         }
         
         if (this.x > this.ctx.canvas.width - this.width) {
